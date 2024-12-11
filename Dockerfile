@@ -1,27 +1,9 @@
-# Use a lightweight python base image
-FROM python:3.9-slim
-
-# Install dependencies for Playwright and Chromium
-RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    ca-certificates \
-    libx11-dev \
-    libx264-dev \
-    libfontconfig1 \
-    libxss1 \
-    libappindicator3-1 \
-    libnss3 \
-    chromium \
-    && rm -rf /var/lib/apt/lists/*
+# Use the Playwright base image with Python 3.9
+FROM mcr.microsoft.com/playwright:v1.33.0-python3.9
 
 # Install required python packages from requirements.txt
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Install Playwright and its dependencies
-RUN pip install playwright
-RUN playwright install --with-deps
 
 # Set environment variable for Playwright to use the installed Chromium browser
 ENV PLAYWRIGHT_BROWSERS_PATH=/usr/local/share/.cache/ms-playwright

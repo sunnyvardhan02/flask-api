@@ -3,6 +3,7 @@ from flask_cors import CORS
 from playwright.sync_api import sync_playwright
 from io import BytesIO
 
+
 # Create Flask app
 app = Flask(__name__)
 
@@ -15,11 +16,11 @@ bp = Blueprint('main', __name__)
 # Function to generate PDF from HTML content using Playwright
 def generate_pdf(html_content: str) -> BytesIO:
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.set_content(html_content)
-        pdf_bytes = page.pdf(format="A4", print_background=True)
-        browser.close()
+        browser = p.chromium.launch(headless=True)  # Launch Chromium browser in headless mode
+        page = browser.new_page()  # Create a new page instance
+        page.set_content(html_content)  # Set the HTML content to render
+        pdf_bytes = page.pdf(format="A4", print_background=True)  # Generate the PDF
+        browser.close()  # Close the browser
     
     # Return PDF as a BytesIO stream
     pdf_stream = BytesIO(pdf_bytes)

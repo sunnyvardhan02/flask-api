@@ -1,5 +1,5 @@
-# Use the Playwright base image with Python 3.9
-FROM mcr.microsoft.com/playwright:v1.33.0-python3.9
+# Use the Playwright base image with Python
+FROM mcr.microsoft.com/playwright/python:latest
 
 # Install required python packages from requirements.txt
 COPY requirements.txt .

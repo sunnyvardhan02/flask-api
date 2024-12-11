@@ -1,0 +1,62 @@
+# Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.pdb
+*.log
+
+# Flask-related files
+instance/
+.webassets-cache
+
+# Virtual environment directories
+venv/
+env/
+.venv/
+env.bak/
+venv.bak/
+
+# Node.js dependencies (if you are using npm/yarn for any part of your project)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Docker-related files
+*.dockerfile
+docker-compose.yml
+
+# Playwright browser cache
+/.playwright/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependency directories
+__pycache__/
+*.egg-info/
+.eggs/
+dist/
+build/
+*.whl
+
+# Test and coverage files
+coverage/
+nosetests.xml
+*.cover
+*.hypothesis/
+.pytest_cache/
+cover/
+
+# Secrets or sensitive info (be sure to not include keys or passwords)
+.env
+*.env
+secrets.json
+config.py

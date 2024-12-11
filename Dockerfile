@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/playwright/python:v1.31.1-jammy
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install required dependencies including the Google Chrome repository
+# Install required dependencies including the Google Chrome repository and key
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
@@ -17,9 +17,11 @@ RUN apt-get update && apt-get install -y \
     libappindicator3-1 \
     libnss3 \
     gnupg \
-    # Add the Google Chrome repository key and source
+    # Add the Google Chrome signing key
     && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /usr/share/keyrings/chrome-archive-keyring.gpg \
+    # Add the Google Chrome repository
     && sh -c 'echo "deb [signed-by=/usr/share/keyrings/chrome-archive-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list' \
+    # Update apt and install Chromium
     && apt-get update \
     && apt-get install -y chromium-browser \
     && rm -rf /var/lib/apt/lists/*

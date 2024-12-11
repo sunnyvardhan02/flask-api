@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install Playwright browsers
-RUN npx playwright install --with-deps
+RUN  playwright install --with-deps
 
 # Set the working directory
 WORKDIR /app

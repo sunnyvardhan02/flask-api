@@ -65,7 +65,3 @@ app.register_blueprint(bp)
 # Function to create and return the app
 def create_app():
     return app
-
-# Run the app if this script is executed directly
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)

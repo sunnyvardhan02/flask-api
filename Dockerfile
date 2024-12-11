@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y \
     libxss1 \
     libappindicator3-1 \
     libnss3 \
-    chromium \
     libasound2 \
     libatk-bridge2.0-0 \
     libatk1.0-0 \
@@ -21,6 +20,12 @@ RUN apt-get update && apt-get install -y \
     libnspr4 \
     libxcomposite1 \
     libxrandr2 \
+    ttf-ubuntu-font-family \
+    libenchant-2-2 \
+    libicu66 \
+    libjpeg-turbo8 \
+    libvpx6 \
+    libevent-2.1-7 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install required python packages from requirements.txt

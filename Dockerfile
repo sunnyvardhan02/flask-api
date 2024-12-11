@@ -5,11 +5,22 @@ FROM mcr.microsoft.com/playwright/python:v1.31.1-jammy
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers and necessary dependencies
-RUN playwright install --with-deps
+# Install Chromium manually and Playwright dependencies
+RUN apt-get update && apt-get install -y \
+    chromium \
+    libx11-dev \
+    libx264-dev \
+    libfontconfig1 \
+    libxss1 \
+    libappindicator3-1 \
+    libnss3 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set environment variable for Playwright to use the installed Chromium browser
-ENV PLAYWRIGHT_BROWSERS_PATH=/usr/local/share/.cache/ms-playwright
+# Set the Playwright path to use the system-installed Chromium
+ENV PLAYWRIGHT_BROWSERS_PATH=/usr/bin
+
+# Install Playwright (without the --with-deps flag)
+RUN playwright install
 
 # Copy the application files to the container
 COPY . /app

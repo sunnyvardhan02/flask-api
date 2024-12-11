@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install Playwright and the browsers
+RUN pip install playwright && playwright install
+
 # Set environment variable for Playwright to use the installed Chromium browser
 ENV PLAYWRIGHT_BROWSERS_PATH=/usr/local/share/.cache/ms-playwright
 

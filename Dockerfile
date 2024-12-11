@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install Playwright browsers explicitly and include necessary dependencies
-RUN playwright install --with-deps || { echo "Playwright install failed. Trying a different install"; playwright install; }
+RUN playwright install 
 
 # Set environment variable for Playwright to use the installed Chromium browser
 ENV PLAYWRIGHT_BROWSERS_PATH=/usr/local/share/.cache/ms-playwright

@@ -13,19 +13,48 @@ CORS(app)
 # Define a Blueprint for routes
 bp = Blueprint('main', __name__)
 
-# # Function to generate PDF from HTML content using Playwright
-# def generate_pdf(html_content: str) -> BytesIO:
-#     with sync_playwright() as p:
-#         browser = p.chromium.launch(headless=True)  # Launch Chromium browser in headless mode
-#         page = browser.new_page()  # Create a new page instance
-#         page.set_content(html_content)  # Set the HTML content to render
-#         pdf_bytes = page.pdf(format="A4", print_background=True)  # Generate the PDF
-#         browser.close()  # Close the browser
-    
-#     # Return PDF as a BytesIO stream
-#     pdf_stream = BytesIO(pdf_bytes)
-#     pdf_stream.seek(0)
-#     return pdf_stream
+def generate_pdf_with_images(html_content: str) -> BytesIO:
+    with sync_playwright() as p:
+        # Launch the browser in headless mode
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+        page = context.new_page()
+
+        # Intercept requests to manage loading of resources
+        def handle_route(route):
+            request = route.request
+            if request.resource_type == "stylesheet":
+                route.abort()  # Block stylesheets to optimize PDF generation
+            else:
+                route.continue_()
+
+        page.route("**/*", handle_route)
+
+        # Set the HTML content with proper wait times
+        page.set_content(html_content, wait_until="domcontentloaded", timeout=120000)
+
+        # Ensure network activity is settled for dynamic content
+        page.wait_for_load_state("networkidle", timeout=120000)
+
+        # Ensure the page is ready (e.g., images are loaded)
+        page.wait_for_selector("body", timeout=120000)
+
+        # Generate PDF with custom margins and background
+        pdf_buffer = page.pdf(
+            format="A4",
+            print_background=True,
+            margin={"top": "1mm", "left": "10mm", "bottom": "1mm", "right": "10mm"},
+        )
+
+        # Clean up browser context and close the browser
+        context.close()
+        browser.close()
+
+        # Return the PDF as a BytesIO object
+        pdf_stream = BytesIO(pdf_buffer)
+        pdf_stream.seek(0)
+        return pdf_stream
+        
 def generate_pdf(html_content: str) -> BytesIO:
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)

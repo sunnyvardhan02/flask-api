@@ -13,7 +13,7 @@ CORS(app)
 # Define a Blueprint for routes
 bp = Blueprint('main', __name__)
 
-def generate_pdf_with_images(html_content: str) -> BytesIO:
+def generate_pdf(html_content: str) -> BytesIO:
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context()

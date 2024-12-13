@@ -3,7 +3,6 @@ from flask_cors import CORS
 from playwright.sync_api import sync_playwright
 from io import BytesIO
 
-
 # Create Flask app
 app = Flask(__name__)
 
@@ -13,43 +12,30 @@ CORS(app)
 # Define a Blueprint for routes
 bp = Blueprint('main', __name__)
 
+# Function to generate PDF from HTML content using Playwright
 def generate_pdf(html_content: str) -> BytesIO:
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context()
-        page = context.new_page()
+        browser = p.chromium.launch(headless=True)  # Launch Chromium browser in headless mode
+        page = browser.new_page()  # Create a new page instance
+        
+        # Set the HTML content to render
+        page.set_content(html_content)
 
-        # Debugging requests and responses
-        page.on("request", lambda request: print(f"Request: {request.url}"))
-        page.on("response", lambda response: print(f"Response: {response.url}, Status: {response.status}"))
+        # Wait for all network requests to finish (this includes images, styles, etc.)
+        page.wait_for_load_state('networkidle')  # Wait until there are no more than 0 network connections for at least 500 ms
 
-        # Load HTML content with base URL
-        base_url = "http://localhost:3000"  # Change to your deployed app's URL in production
-        page.set_content(html_content, wait_until="domcontentloaded", base_url=base_url)
+        # Alternatively, wait for specific images (if needed)
+        # page.wait_for_selector('img[src="http://localhost:3000/images/logoss.jpg"]')
 
-        # Wait for images to load
-        page.evaluate("""
-            Array.from(document.images).forEach(img => {
-                img.complete || img.decode();
-            });
-        """)
+        # Generate PDF after all resources are loaded
+        pdf_bytes = page.pdf(format="A4", print_background=True)
 
-        # Wait for network to be idle
-        page.wait_for_load_state("networkidle")
-
-        # Generate PDF
-        pdf_buffer = page.pdf(
-            format="A4",
-            print_background=True,
-            margin={"top": "1mm", "left": "10mm", "bottom": "1mm", "right": "10mm"}
-        )
-
-        context.close()
-        browser.close()
-
-        pdf_stream = BytesIO(pdf_buffer)
-        pdf_stream.seek(0)
-        return pdf_stream
+        browser.close()  # Close the browser
+    
+    # Return PDF as a BytesIO stream
+    pdf_stream = BytesIO(pdf_bytes)
+    pdf_stream.seek(0)
+    return pdf_stream
 
 # Define route to handle PDF generation
 @bp.route('/generate-pdf', methods=['POST'])

@@ -26,7 +26,7 @@ bp = Blueprint('main', __name__)
 #     pdf_stream = BytesIO(pdf_bytes)
 #     pdf_stream.seek(0)
 #     return pdf_stream
-    def generate_pdf(html_content: str) -> BytesIO:
+def generate_pdf(html_content: str) -> BytesIO:
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context()  # Create a browser context

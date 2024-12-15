@@ -14,18 +14,23 @@ CORS(app)
 bp = Blueprint('main', __name__)
 
 # Function to generate PDF from HTML content using Playwright
-def generate_pdf(html_content: str) -> BytesIO:
+def generate_pdf(html_content: str, **pdf_options) -> BytesIO:
+
+
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)  # Launch Chromium browser in headless mode
-        page = browser.new_page()  # Create a new page instance
-        page.set_content(html_content)  # Set the HTML content to render
-        pdf_bytes = page.pdf(format="A4", print_background=True)  # Generate the PDF
-        browser.close()  # Close the browser
-    
-    # Return PDF as a BytesIO stream
-    pdf_stream = BytesIO(pdf_bytes)
-    pdf_stream.seek(0)
-    return pdf_stream
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        # Set the HTML content and wait for network idle
+        page.set_content(html_content, wait_until="networkidle")
+
+        # Generate PDF with customizable options
+        pdf_buffer = page.pdf(**pdf_options)
+
+        page.close()
+        browser.close()
+
+        return pdf_buffer
     
 
 # Define route to handle PDF generation
@@ -44,11 +49,11 @@ def generate_pdf_api():
             )
 
         # Generate PDF from HTML content
-        pdf_stream = generate_pdf(html_content)
+        pdf_buffer = generate_pdf(html_content)
 
         # Return the PDF file as an attachment in the response
         return Response(
-            pdf_stream,
+            pdf_buffer,
             content_type='application/pdf',
             headers={'Content-Disposition': 'attachment; filename=certificate.pdf'}
         )

@@ -8,8 +8,10 @@ from io import BytesIO
 app = Flask(__name__)
 
 # Enable CORS for all routes
-CORS(app, origins=["https://auto-certification.vercel.app"])
-
+CORS(app, origins=[
+    "https://auto-certification.vercel.app",  # Production
+    "http://localhost:3000",                  # Local development
+])
 # Define a Blueprint for routes
 bp = Blueprint('main', __name__)
 
